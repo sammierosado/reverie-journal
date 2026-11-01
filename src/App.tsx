@@ -11,6 +11,7 @@ import { ShortcutsDialog } from './components/ShortcutsDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { NotesPanel } from './marginalia/NotesPanel'
 import { Crescent } from './components/Ornaments'
+import { EyeOff } from 'lucide-react'
 import { StyleDialog } from './components/StyleDialog'
 import { applyAesthetic, rememberForFirstPaint, resolveMode } from './themes/applyAesthetic'
 
@@ -117,6 +118,18 @@ export default function App() {
         Skip to the page
       </a>
       {!focusMode && <TopBar />}
+      {focusMode && (
+        // The top bar is hidden in focus mode; this keeps a way out for touch screens and mice.
+        <button
+          type="button"
+          className="focus-exit icon-button"
+          onClick={() => useUi.getState().setFocusMode(false)}
+          aria-label="Leave focus mode (Esc)"
+          title="Leave focus mode · Esc"
+        >
+          <EyeOff size={17} strokeWidth={1.4} aria-hidden />
+        </button>
+      )}
       <main className="px-4 pt-6 pb-[45vh] sm:px-6 sm:pt-10">
         {ready && entry ? (
           <Page key={entry.id} entry={entry} />

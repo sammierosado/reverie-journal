@@ -218,6 +218,47 @@ test('every style renders with its own fonts and colors', async ({ page }) => {
   expect(seen.size).toBe(count)
 })
 
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 375, height: 812 }, hasTouch: true })
+
+  test('everything fits on screen and every essential is one tap away', async ({ page }) => {
+    // Nothing sticks out past the right edge.
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+    expect(overflow).toBeLessThanOrEqual(0)
+
+    const bar = page.locator('header.chrome')
+    for (const name of ['Open journal', 'Search and commands', 'Margin notes', 'Choose your style', 'Settings and backups']) {
+      const button = bar.getByRole('button', { name: new RegExp(name) })
+      await expect(button).toBeInViewport({ ratio: 1 })
+    }
+
+    // Write, then add a margin note through the notes panel.
+    await page.locator('#entry-title').tap()
+    await page.keyboard.type('On the bus')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('Writing with my thumbs.')
+    await bar.getByRole('button', { name: 'Margin notes' }).tap()
+    await page.getByRole('button', { name: 'Right note here' }).tap()
+    await page.keyboard.type('Thumbs are slow.')
+    await page.keyboard.press('Escape')
+    await waitForSave(page)
+
+    // Style picker works by tap.
+    await bar.getByRole('button', { name: 'Choose your style' }).tap()
+    await page.getByRole('dialog', { name: 'Choose your style' }).getByText('Sugar Cloud', { exact: true }).tap()
+    await expect(page.locator('html')).toHaveAttribute('data-aesthetic', 'sugar-cloud')
+  })
+
+  test('focus mode can be left without a keyboard', async ({ page }) => {
+    await page.locator('header.chrome').getByRole('button', { name: 'Search and commands' }).tap()
+    await page.keyboard.type('focus mode')
+    await page.getByRole('option', { name: /Focus mode/ }).tap()
+    await expect(page.locator('header.chrome')).toHaveCount(0)
+    await page.getByRole('button', { name: /Leave focus mode/ }).tap()
+    await expect(page.locator('header.chrome')).toBeVisible()
+  })
+})
+
 test('works offline once it has been opened', async ({ page, context }) => {
   await writeEntry(page, 'Offline page', ['Written with the network on.'])
   await waitForSave(page)

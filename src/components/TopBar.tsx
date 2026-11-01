@@ -21,7 +21,8 @@ function SaveIndicator() {
   return (
     <div role="status" aria-live="polite" className="flex items-center gap-2 font-sans text-[12px] tracking-wide text-ink-muted">
       <span className={`save-dot save-${save.status}`} aria-hidden />
-      <span>{text}</span>
+      {/* On phones the colored dot alone shows the state, unless something is wrong. */}
+      <span className={save.status === 'error' ? '' : 'phone-hide'}>{text}</span>
       {save.status === 'error' && (
         <button type="button" className="quiet-link" onClick={() => void flush()} title={save.error ?? undefined}>
           Retry now
@@ -49,11 +50,13 @@ export function TopBar() {
 
       <SaveIndicator />
 
+      {/* Phones keep the essentials here; prompts, focus mode and light/dark stay one tap away
+          in the search list (and light/dark in the style picker). */}
       <nav aria-label="Page tools" className="flex items-center gap-0.5">
         <button type="button" className="icon-button" onClick={() => toggle('palette')} aria-label="Search and commands (Ctrl+K)" title="Search · Ctrl+K">
           <Search size={17} strokeWidth={1.4} aria-hidden />
         </button>
-        <button type="button" className="icon-button" onClick={drawPrompt} aria-label="Draw a writing prompt" title="A writing prompt">
+        <button type="button" className="icon-button phone-hide" onClick={drawPrompt} aria-label="Draw a writing prompt" title="A writing prompt">
           <FeatherIcon size={17} strokeWidth={1.4} aria-hidden />
         </button>
         {wide ? (
@@ -72,16 +75,16 @@ export function TopBar() {
             <StickyNote size={17} strokeWidth={1.4} aria-hidden />
           </button>
         )}
-        <button type="button" className="icon-button" onClick={toggleFocusMode} aria-label="Focus mode (Ctrl+.)" title="Focus mode · Ctrl+.">
+        <button type="button" className="icon-button phone-hide" onClick={toggleFocusMode} aria-label="Focus mode (Ctrl+.)" title="Focus mode · Ctrl+.">
           <Eye size={17} strokeWidth={1.4} aria-hidden />
         </button>
         <button type="button" className="icon-button" onClick={() => toggle('style')} aria-label="Choose your style" title="Style">
           <Palette size={17} strokeWidth={1.4} aria-hidden />
         </button>
-        <button type="button" className="icon-button" onClick={toggleTheme} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'} title="Light / dark">
+        <button type="button" className="icon-button phone-hide" onClick={toggleTheme} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'} title="Light / dark">
           {isDark ? <Sun size={17} strokeWidth={1.4} aria-hidden /> : <Moon size={17} strokeWidth={1.4} aria-hidden />}
         </button>
-        <button type="button" className="icon-button hidden sm:inline-flex" onClick={() => toggle('shortcuts')} aria-label="Keyboard shortcuts (Ctrl+/)" title="Shortcuts · Ctrl+/">
+        <button type="button" className="icon-button phone-hide" onClick={() => toggle('shortcuts')} aria-label="Keyboard shortcuts (Ctrl+/)" title="Shortcuts · Ctrl+/">
           <Keyboard size={17} strokeWidth={1.4} aria-hidden />
         </button>
         <button type="button" className="icon-button" onClick={() => toggle('settings')} aria-label="Settings and backups (Ctrl+,)" title="Settings · Ctrl+,">
