@@ -42,7 +42,8 @@ describe('journal store', () => {
     // Simulate closing and reopening the app.
     await store().init()
     expect(store().currentId).toBe(id)
-    const notes = store().annotations
+    // Both notes can share a creation millisecond, so compare without relying on their order.
+    const notes = [...store().annotations].sort((a, b) => a.side.localeCompare(b.side))
     expect(notes.map((n) => [n.side, n.paragraphId, n.text, n.kind])).toEqual([
       ['left', 'p1', 'A left thought', 'note'],
       ['right', 'p2', 'A quotation', 'quote'],
