@@ -11,12 +11,13 @@ const PORT = 4317
 
 /** Emits sw.js with the exact list of built files, so the whole app is cached for offline use. */
 function serviceWorker(): Plugin {
-  const publicFiles = ['/', '/manifest.webmanifest', '/icon.svg', '/icon-192.png', '/icon-512.png']
+  // Relative to sw.js, so the same build works at a domain root or under a subpath (GitHub Pages).
+  const publicFiles = ['./', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png']
   return {
     name: 'reverie-service-worker',
     apply: 'build',
     generateBundle(_options, bundle) {
-      const files = [...publicFiles, ...Object.keys(bundle).map((f) => `/${f}`)]
+      const files = [...publicFiles, ...Object.keys(bundle).map((f) => `./${f}`)]
       const version = createHash('sha256').update(files.join('|')).digest('hex').slice(0, 12)
       const source = readFileSync('sw-template.js', 'utf8')
         .replace('__VERSION__', version)
@@ -27,6 +28,8 @@ function serviceWorker(): Plugin {
 }
 
 export default defineConfig({
+  // Relative asset URLs: the app can be hosted at any path, e.g. https://user.github.io/reverie-journal/.
+  base: './',
   plugins: [react(), tailwindcss(), serviceWorker()],
   server: { port: PORT, strictPort: true },
   preview: { port: PORT, strictPort: true },

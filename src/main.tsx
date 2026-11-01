@@ -20,6 +20,6 @@ createRoot(document.getElementById('root')!).render(
 // The service worker caches the app itself (never journal data) so it opens offline.
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((err) => console.warn('Offline support unavailable', err))
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch((err) => console.warn('Offline support unavailable', err))
   })
 }

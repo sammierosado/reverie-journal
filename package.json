@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "app": "vite preview --open",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "e2e:pages": "playwright test -c playwright.subpath.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "^5.3.0",

@@ -19,7 +19,7 @@ async function waitForSave(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
+  await page.goto('./')
   await expect(editor(page)).toBeVisible()
 })
 

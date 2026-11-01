@@ -2,6 +2,8 @@
  * Caches the application shell only. Journal data lives in IndexedDB and is never touched here. */
 const CACHE = 'reverie-__VERSION__'
 const PRECACHE = __PRECACHE__
+/** The app's own page, wherever it is hosted (domain root or a subpath). */
+const SHELL = new URL('./', self.location).href
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()))
@@ -26,10 +28,10 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((response) => {
           const copy = response.clone()
-          caches.open(CACHE).then((cache) => cache.put('/', copy))
+          caches.open(CACHE).then((cache) => cache.put(SHELL, copy))
           return response
         })
-        .catch(() => caches.match('/', { ignoreVary: true }).then((r) => r || Response.error())),
+        .catch(() => caches.match(SHELL, { ignoreVary: true }).then((r) => r || Response.error())),
     )
     return
   }
