@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { Download, FileText, ShieldCheck, Upload } from 'lucide-react'
+import { Download, FileText, Palette, ShieldCheck, Upload } from 'lucide-react'
+import { getAesthetic } from '../themes/aesthetics'
 import { useJournal } from '../state/journalStore'
 import { confirmAction, useUi } from '../state/uiStore'
 import { BackupValidationError, parseBackup, restoreBackup, type RestoreMode } from '../db/backup'
@@ -83,16 +84,21 @@ export function SettingsDialog() {
   return (
     <Modal title="Settings" onClose={close} width="34rem">
       <Section title="Appearance">
-        <Row label="Theme" htmlFor="pref-theme">
+        <Row label={`Style · ${getAesthetic(prefs.aesthetic).name}`}>
+          <button type="button" className="btn" onClick={() => useUi.getState().open('style')}>
+            <Palette size={14} aria-hidden /> Choose a style…
+          </button>
+        </Row>
+        <Row label="Light or dark" htmlFor="pref-theme">
           <select
             id="pref-theme"
             value={prefs.theme}
             onChange={(e) => setPrefs({ theme: e.target.value as ThemePreference })}
             className="select-quiet"
           >
-            <option value="system">Follow the system</option>
-            <option value="light">Ivory (light)</option>
-            <option value="dark">Nocturne (dark)</option>
+            <option value="system">Match my computer</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
           </select>
         </Row>
         <Row label={`Text size · ${prefs.fontSize}px`} htmlFor="pref-size">

@@ -1,4 +1,4 @@
-import { BookOpen, Eye, Feather as FeatherIcon, Keyboard, Moon, PanelLeftClose, PanelLeftOpen, Search, Settings, StickyNote, Sun } from 'lucide-react'
+import { BookOpen, Eye, Palette, Feather as FeatherIcon, Keyboard, Moon, PanelLeftClose, PanelLeftOpen, Search, Settings, StickyNote, Sun } from 'lucide-react'
 import { useJournal } from '../state/journalStore'
 import { useUi } from '../state/uiStore'
 import { drawPrompt, toggleFocusMode, toggleMargins, toggleTheme } from '../lib/commands'
@@ -74,6 +74,9 @@ export function TopBar() {
         )}
         <button type="button" className="icon-button" onClick={toggleFocusMode} aria-label="Focus mode (Ctrl+.)" title="Focus mode · Ctrl+.">
           <Eye size={17} strokeWidth={1.4} aria-hidden />
+        </button>
+        <button type="button" className="icon-button" onClick={() => toggle('style')} aria-label="Choose your style" title="Style">
+          <Palette size={17} strokeWidth={1.4} aria-hidden />
         </button>
         <button type="button" className="icon-button" onClick={toggleTheme} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'} title="Light / dark">
           {isDark ? <Sun size={17} strokeWidth={1.4} aria-hidden /> : <Moon size={17} strokeWidth={1.4} aria-hidden />}

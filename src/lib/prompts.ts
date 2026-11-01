@@ -36,10 +36,3 @@ export function randomPrompt(exclude?: string | null): string {
   const pool = WRITING_PROMPTS.filter((p) => p !== exclude)
   return pool[Math.floor(Math.random() * pool.length)] ?? WRITING_PROMPTS[0]!
 }
-
-export const PAGE_PLACEHOLDERS: readonly string[] = [
-  'The page is listening…',
-  'Begin anywhere. The ink will follow.',
-  'Tell the page what the day was really like…',
-  'Something is waiting to be written…',
-]

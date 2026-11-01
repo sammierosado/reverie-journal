@@ -1,4 +1,5 @@
 import type { JSONContent } from '@tiptap/core'
+import type { AestheticId } from '../themes/aesthetics'
 
 /** Version of the stored record shape. Bumped together with a Dexie migration. */
 export const DATA_VERSION = 2
@@ -81,6 +82,8 @@ export type ThemePreference = 'light' | 'dark' | 'system'
 export interface UserPreferences {
   id: 'prefs'
   theme: ThemePreference
+  /** Visual style; see src/themes/aesthetics.ts. Unknown ids fall back to the default. */
+  aesthetic: AestheticId
   /** Body text size in px. */
   fontSize: number
   /** Unitless line height. */
@@ -94,6 +97,7 @@ export interface UserPreferences {
 export const DEFAULT_PREFERENCES: UserPreferences = {
   id: 'prefs',
   theme: 'system',
+  aesthetic: 'fallen-angel',
   fontSize: 20,
   lineHeight: 1.75,
   typewriterMode: false,

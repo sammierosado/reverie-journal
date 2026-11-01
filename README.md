@@ -33,6 +33,24 @@ The whole app works without a mouse. Press **Ctrl /** inside the app for the ful
 
 Browser-reserved keys (Ctrl N, Ctrl T, Ctrl W…) were avoided on purpose, because pages can't override them.
 
+## Styles
+
+Click the **palette** icon in the top bar (or Ctrl K → "Choose your style…") to pick a look. Each style has its own colors in light and dark, its own fonts, page shape, ornaments, desk pattern and page invitations:
+
+| Style | Feel |
+|---|---|
+| Fallen Angel | Dark romance, moonlight and gold (the default) |
+| Rosewater | Soft blush, roses and champagne |
+| Grimoire | Candlelight, moss and moon phases |
+| Sugar Cloud | Pastel, round and sweet |
+| Oak & Leather | Brass, walnut and a good desk |
+| Varsity | Bold type, team stripes, game day |
+| Emerald Isle | Celtic knots, green hills, old gold |
+| The Bronx | Subway tile, marker ink, big city |
+| Brownstone | Brick, iron and Brooklyn stoops |
+
+Styles are plain data in `src/themes/aesthetics.ts`. A unit test checks every palette for readable contrast (WCAG AA or better), so a new style can't ship with hard-to-read text. All fonts are bundled, so every style works offline.
+
 ## What's in it
 
 - **Writing**: Tiptap rich text (bold, italic, underline, headings, quotes, lists, links), autosave with a status indicator, word count, focus mode, typewriter mode, adjustable size and line spacing, light ("Ivory") and dark ("Nocturne") themes. Animations respect *reduce motion*.

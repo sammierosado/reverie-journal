@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import type { JSONContent } from '@tiptap/core'
 import type { JournalEntry, MarginAnnotation } from '../db/types'
 import { useJournal } from '../state/journalStore'
@@ -10,10 +10,11 @@ import { MarginColumn } from '../marginalia/MarginColumn'
 import { useParagraphBoxes } from '../marginalia/useParagraphBoxes'
 import { useMediaQuery, WIDE_QUERY } from '../lib/useMediaQuery'
 import { formatLongDate } from '../lib/dates'
-import { PAGE_PLACEHOLDERS } from '../lib/prompts'
+import { getAesthetic } from '../themes/aesthetics'
+import { useAutoSize } from '../lib/useAutoSize'
 import { EntryMeta } from './EntryMeta'
 import { PromptCard } from './PromptCard'
-import { CelestialDivider, CornerFlourish } from './Ornaments'
+import { CelestialDivider, PageCorners } from './Ornaments'
 
 /** CSS for paragraph markers and the highlight linking a note to its paragraph. */
 function useMarginStyles(annotations: MarginAnnotation[], activePid: string | null): string {
@@ -37,12 +38,6 @@ function useMarginStyles(annotations: MarginAnnotation[], activePid: string | nu
   }, [annotations, activePid])
 }
 
-function autoSize(el: HTMLTextAreaElement | null) {
-  if (!el) return
-  el.style.height = 'auto'
-  el.style.height = `${el.scrollHeight}px`
-}
-
 export function Page({ entry }: { entry: JournalEntry }) {
   const updateEntry = useJournal((s) => s.updateEntry)
   const annotations = useJournal((s) => s.annotations)
@@ -55,16 +50,14 @@ export function Page({ entry }: { entry: JournalEntry }) {
 
   const showMargins = wide && prefs.showMargins && !focusMode
   const docPids = useMemo(() => new Set(extractParagraphs(entry.content).map((p) => p.id)), [entry.content])
-  const boxes = useParagraphBoxes(rowRef, [entry.content, prefs.fontSize, prefs.lineHeight, showMargins, entry.title])
+  const boxes = useParagraphBoxes(rowRef, [entry.content, prefs.fontSize, prefs.lineHeight, prefs.aesthetic, showMargins, entry.title])
   const marginCss = useMarginStyles(annotations, activePid)
   const words = useMemo(() => countWords(entry.plainText), [entry.plainText])
-  // Stable per entry, so the invitation doesn't change while you look at it.
-  const placeholder = useMemo(
-    () => PAGE_PLACEHOLDERS[parseInt(entry.id.slice(0, 6), 16) % PAGE_PLACEHOLDERS.length]!,
-    [entry.id],
-  )
+  // Each style speaks in its own voice; stable per entry, so the invitation doesn't change while you look at it.
+  const placeholders = getAesthetic(prefs.aesthetic).placeholders
+  const placeholder = placeholders[parseInt(entry.id.slice(0, 6), 16) % placeholders.length]!
 
-  useLayoutEffect(() => autoSize(titleRef.current), [entry.title])
+  useAutoSize(titleRef, [entry.title, prefs.aesthetic, showMargins])
 
   const onContent = useCallback((content: JSONContent) => updateEntry(entry.id, { content }), [entry.id, updateEntry])
   const focusTitle = useCallback(() => {
@@ -99,10 +92,7 @@ export function Page({ entry }: { entry: JournalEntry }) {
       )}
 
       <article className="page" aria-label="Journal page">
-        <CornerFlourish className="corner corner-tl" />
-        <CornerFlourish className="corner corner-tr" />
-        <CornerFlourish className="corner corner-bl" />
-        <CornerFlourish className="corner corner-br" />
+        <PageCorners />
 
         <header className="mb-2">
           {!showMargins && !focusMode ? (

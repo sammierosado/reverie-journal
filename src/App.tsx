@@ -11,23 +11,23 @@ import { ShortcutsDialog } from './components/ShortcutsDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { NotesPanel } from './marginalia/NotesPanel'
 import { Crescent } from './components/Ornaments'
+import { StyleDialog } from './components/StyleDialog'
+import { applyAesthetic, rememberForFirstPaint, resolveMode } from './themes/applyAesthetic'
 
 function useTheme() {
   const theme = useJournal((s) => s.prefs.theme)
+  const aesthetic = useJournal((s) => s.prefs.aesthetic)
+  const ready = useJournal((s) => s.ready)
   useEffect(() => {
+    // Until preferences load, keep whatever index.html painted from the remembered style.
+    if (!ready) return
     const mql = window.matchMedia('(prefers-color-scheme: dark)')
-    const apply = () => {
-      document.documentElement.dataset.theme = theme === 'system' ? (mql.matches ? 'dark' : 'light') : theme
-    }
-    try {
-      localStorage.setItem('reverie-theme', theme)
-    } catch {
-      // Storage blocked: the theme just follows the system until the app loads.
-    }
+    const apply = () => applyAesthetic(document.documentElement, aesthetic, resolveMode(theme, mql.matches))
+    rememberForFirstPaint(theme, aesthetic)
     apply()
     mql.addEventListener('change', apply)
     return () => mql.removeEventListener('change', apply)
-  }, [theme])
+  }, [theme, aesthetic, ready])
 }
 
 /** Writes pending changes whenever the window might be going away. */
@@ -133,6 +133,7 @@ export default function App() {
       {overlay === 'settings' && <SettingsDialog />}
       {overlay === 'shortcuts' && <ShortcutsDialog />}
       {overlay === 'notes' && <NotesPanel />}
+      {overlay === 'style' && <StyleDialog />}
       <ConfirmDialog />
       <Toast />
     </div>

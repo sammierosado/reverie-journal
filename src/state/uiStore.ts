@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type Overlay = 'journal' | 'palette' | 'settings' | 'shortcuts' | 'notes' | null
+export type Overlay = 'journal' | 'palette' | 'settings' | 'shortcuts' | 'notes' | 'style' | null
 
 export interface ConfirmRequest {
   title: string

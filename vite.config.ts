@@ -17,7 +17,10 @@ function serviceWorker(): Plugin {
     name: 'reverie-service-worker',
     apply: 'build',
     generateBundle(_options, bundle) {
-      const files = [...publicFiles, ...Object.keys(bundle).map((f) => `./${f}`)]
+      // Font subsets for scripts the app isn't written in (Cyrillic, Greek, Vietnamese…) stay out of
+      // the offline cache; the browser still fetches them online if a page ever needs them.
+      const skipped = /-(cyrillic|cyrillic-ext|greek|greek-ext|vietnamese|hebrew|math|symbols)-/
+      const files = [...publicFiles, ...Object.keys(bundle).filter((f) => !skipped.test(f)).map((f) => `./${f}`)]
       const version = createHash('sha256').update(files.join('|')).digest('hex').slice(0, 12)
       const source = readFileSync('sw-template.js', 'utf8')
         .replace('__VERSION__', version)

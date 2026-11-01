@@ -9,12 +9,19 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>Reverie Journal</title>
     <script>
-      // Set the theme before first paint to avoid a flash of the wrong colors.
-      // The saved preference lives in IndexedDB; this localStorage copy is only a paint-time hint.
-      var t = null
-      try { t = localStorage.getItem('reverie-theme') } catch (e) {}
-      document.documentElement.dataset.theme =
-        t === 'light' || t === 'dark' ? t : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      // Paint the chosen style and light/dark mode before the app loads, to avoid a flash of
+      // the wrong look. Preferences live in IndexedDB; this localStorage copy is only a hint
+      // (written by src/themes/applyAesthetic.ts).
+      ;(function () {
+        var saved = null
+        try { saved = JSON.parse(localStorage.getItem('reverie-paint') || 'null') } catch (e) {}
+        var theme = saved && saved.theme
+        var mode = theme === 'light' || theme === 'dark' ? theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        var root = document.documentElement
+        root.dataset.theme = mode
+        var vars = saved && saved[mode]
+        if (vars) for (var name in vars) root.style.setProperty(name, vars[name])
+      })()
     </script>
   </head>
   <body>

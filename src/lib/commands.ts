@@ -8,6 +8,7 @@ import { downloadText } from './download'
 import { randomPrompt } from './prompts'
 import { toDayKey } from './dates'
 import { MOODS, type MarginSide, type MoodId } from '../db/types'
+import { getAesthetic, type AestheticId } from '../themes/aesthetics'
 
 const journal = () => useJournal.getState()
 const ui = () => useUi.getState()
@@ -124,6 +125,11 @@ export function toggleTypewriter(): void {
 export function toggleTheme(): void {
   const dark = document.documentElement.dataset.theme === 'dark'
   journal().setPrefs({ theme: dark ? 'light' : 'dark' })
+}
+
+export function setAesthetic(id: AestheticId): void {
+  journal().setPrefs({ aesthetic: id })
+  ui().showToast(`Style: ${getAesthetic(id).name}`)
 }
 
 export function adjustFontSize(delta: number): void {

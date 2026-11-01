@@ -1,9 +1,10 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef, type FocusEvent, type KeyboardEvent } from 'react'
+import { forwardRef, useEffect, useRef, type FocusEvent, type KeyboardEvent } from 'react'
 import { X } from 'lucide-react'
 import { ANNOTATION_KINDS, type MarginAnnotation } from '../db/types'
 import { useJournal } from '../state/journalStore'
 import { confirmAction, useUi } from '../state/uiStore'
 import { focusParagraph } from '../editor/editorRegistry'
+import { useAutoSize } from '../lib/useAutoSize'
 
 interface Props {
   note: MarginAnnotation
@@ -16,12 +17,6 @@ const KIND_PLACEHOLDER: Record<MarginAnnotation['kind'], string> = {
   reflection: 'Looking back, I…',
   quote: 'Words worth keeping…',
   question: 'I wonder…',
-}
-
-function autoGrow(el: HTMLTextAreaElement | null) {
-  if (!el) return
-  el.style.height = 'auto'
-  el.style.height = `${el.scrollHeight}px`
 }
 
 export async function confirmDeleteNote(note: MarginAnnotation): Promise<void> {
@@ -44,7 +39,8 @@ export const NoteCard = forwardRef<HTMLDivElement, Props>(function NoteCard({ no
   const setActiveParagraph = useUi((s) => s.setActiveParagraph)
   const active = useUi((s) => s.activeParagraphId === note.paragraphId)
 
-  useLayoutEffect(() => autoGrow(textRef.current), [note.text])
+  const aesthetic = useJournal((s) => s.prefs.aesthetic)
+  useAutoSize(textRef, [note.text, aesthetic])
 
   useEffect(() => {
     if (focusNoteId !== note.id) return

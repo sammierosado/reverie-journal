@@ -3,6 +3,7 @@ import { useJournal } from '../state/journalStore'
 import { useUi } from '../state/uiStore'
 import { listAllAnnotations } from '../db/repository'
 import { MOODS, moodById, type MarginAnnotation } from '../db/types'
+import { AESTHETICS } from '../themes/aesthetics'
 import { highlightParts, queryTerms, searchEntries, fold } from '../lib/search'
 import { excerpt } from '../editor/content'
 import { formatShortDate } from '../lib/dates'
@@ -35,6 +36,8 @@ function useCommands(): Command[] {
       { id: 'typewriter', label: 'Typewriter mode', run: cmd.toggleTypewriter },
       { id: 'margins', label: 'Show / hide margins', hint: 'Ctrl \\', run: cmd.toggleMargins },
       { id: 'theme', label: 'Switch light / dark theme', run: cmd.toggleTheme },
+      { id: 'style', label: 'Choose your style…', run: () => ui.open('style') },
+      ...AESTHETICS.map((a) => ({ id: `style-${a.id}`, label: `Style: ${a.name}`, hint: a.tagline, run: () => cmd.setAesthetic(a.id) })),
       { id: 'bigger', label: 'Larger text', hint: 'Ctrl =', run: () => cmd.adjustFontSize(1) },
       { id: 'smaller', label: 'Smaller text', hint: 'Ctrl -', run: () => cmd.adjustFontSize(-1) },
       { id: 'title', label: 'Edit the title', run: () => document.getElementById('entry-title')?.focus() },

@@ -175,6 +175,49 @@ test('rejects a file that is not a backup', async ({ page }) => {
   await expect(page.getByRole('alert')).toContainText('not a Reverie Journal backup')
 })
 
+test('changes the style, keeps the writing, and remembers the choice', async ({ page }) => {
+  await writeEntry(page, 'Game day', ['We won in overtime.'])
+  await waitForSave(page)
+
+  await page.getByRole('button', { name: 'Choose your style' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Choose your style' })
+  await dialog.getByText('Varsity', { exact: true }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-aesthetic', 'varsity')
+  await expect(page.locator('#entry-title')).toHaveCSS('text-transform', 'uppercase')
+  expect(await page.locator('#entry-title').evaluate((el) => getComputedStyle(el).fontFamily)).toContain('Oswald')
+  await page.keyboard.press('Escape')
+  await expect(editor(page)).toContainText('We won in overtime.')
+
+  // Survives a reload, and the very first paint already uses the remembered style.
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-aesthetic', 'varsity')
+  await expect(page.locator('#entry-title')).toHaveValue('Game day')
+
+  // Every style can be chosen from the command palette too.
+  await page.keyboard.press('Control+KeyK')
+  await page.keyboard.type('style: the bronx')
+  await page.keyboard.press('Enter')
+  await expect(page.locator('html')).toHaveAttribute('data-aesthetic', 'the-bronx')
+})
+
+test('every style renders with its own fonts and colors', async ({ page }) => {
+  await page.getByRole('button', { name: 'Choose your style' }).click()
+  const radios = page.getByRole('dialog', { name: 'Choose your style' }).locator('input[name="reverie-style"]')
+  const count = await radios.count()
+  expect(count).toBeGreaterThanOrEqual(9)
+  const seen = new Set<string>()
+  for (let i = 0; i < count; i++) {
+    await radios.nth(i).check({ force: true })
+    const look = await page.evaluate(() => {
+      const css = getComputedStyle(document.documentElement)
+      return `${css.getPropertyValue('--rv-page')}|${css.getPropertyValue('--rv-font-display')}`
+    })
+    expect(look).not.toBe('|')
+    seen.add(look)
+  }
+  expect(seen.size).toBe(count)
+})
+
 test('works offline once it has been opened', async ({ page, context }) => {
   await writeEntry(page, 'Offline page', ['Written with the network on.'])
   await waitForSave(page)

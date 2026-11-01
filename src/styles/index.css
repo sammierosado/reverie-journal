@@ -33,6 +33,22 @@
   --rv-accent-ink: #f6f0e7;
   --rv-note: rgb(169 152 168 / 0.12);
   --rv-stars: rgb(57 48 63 / 0.07);
+
+  /* Style-dependent values. These are Fallen Angel's, used only until the app applies
+     the chosen style (normally before first paint; see index.html). */
+  --rv-font-display: 'Cormorant Garamond Variable', Georgia, serif;
+  --rv-font-body: 'Crimson Pro Variable', Georgia, 'Times New Roman', serif;
+  --rv-font-ui: 'Inter Variable', Inter, 'Segoe UI', system-ui, sans-serif;
+  --rv-title-style: italic;
+  --rv-title-weight: 500;
+  --rv-title-transform: none;
+  --rv-title-tracking: 0.005em;
+  --rv-radius-page: 1px;
+  --rv-radius-note: 1px;
+  --rv-radius-control: 2px;
+  --rv-bullet: '✦';
+  --rv-rule: '☾  ✦  ☽';
+  --rv-desk-pattern: none;
   color-scheme: light;
 }
 
@@ -70,9 +86,10 @@
   --color-danger: var(--rv-danger);
   --shadow-veil: var(--rv-shadow);
 
-  --font-display: 'Cormorant Garamond Variable', 'Cormorant Garamond', Georgia, serif;
-  --font-serif: 'Crimson Pro Variable', 'Crimson Pro', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter Variable', Inter, 'Segoe UI', system-ui, sans-serif;
+  /* Set per style by src/themes/aesthetics.ts; the defaults below are Fallen Angel. */
+  --font-display: var(--rv-font-display);
+  --font-serif: var(--rv-font-body);
+  --font-sans: var(--rv-font-ui);
 
   --animate-fade: fade 180ms ease-out both;
   --animate-rise: rise 220ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -122,18 +139,14 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* A faint scatter of stars on the desk — pure CSS, nothing to load. */
+/* Each style's faint desk pattern (stars, tiles, brick, dots…) — pure CSS, nothing to load. */
 .app {
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(1px 1px at 78% 9%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 92% 42%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(1px 1px at 4% 64%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 36% 88%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(1px 1px at 63% 74%, var(--rv-stars) 50%, transparent 51%),
-    radial-gradient(ellipse at 50% -10%, rgb(185 164 134 / 0.12), transparent 60%);
+  background: var(--rv-desk-pattern), var(--rv-desk);
   background-attachment: fixed;
 }
+
+/* Styles whose display face has no true italic (or shouldn't slant) opt out here. */
+.font-display.italic { font-style: var(--rv-title-style); }
 
 ::selection {
   background: rgb(169 152 168 / 0.35);
@@ -209,7 +222,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   font: 500 13px var(--font-sans);
   letter-spacing: 0.02em;
   border: 1px solid var(--rv-line);
-  border-radius: 2px;
+  border-radius: var(--rv-radius-control);
   color: var(--rv-ink);
   background: transparent;
   transition: background-color 160ms, border-color 160ms;
@@ -240,7 +253,8 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
 .segmented {
   display: inline-flex;
   border: 1px solid var(--rv-line);
-  border-radius: 2px;
+  border-radius: var(--rv-radius-control);
+  overflow: hidden;
 }
 .segmented > button {
   display: inline-flex;
@@ -260,8 +274,8 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   background: transparent;
   color: var(--rv-ink);
   border: 1px solid var(--rv-line);
-  border-radius: 2px;
-  padding: 0.3rem 0.5rem;
+  border-radius: var(--rv-radius-control);
+  padding: 0.3rem 0.6rem;
 }
 .select-quiet option { background: var(--rv-surface); }
 
@@ -275,7 +289,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   padding: 0.6rem 1.1rem;
   background: var(--rv-accent);
   color: var(--rv-accent-ink);
-  border-radius: 2px;
+  border-radius: var(--rv-radius-control);
   box-shadow: var(--rv-shadow);
 }
 
@@ -312,7 +326,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   color: var(--rv-ink);
   padding: clamp(1.75rem, 5vw, 4.25rem) clamp(1.25rem, 5vw, 4.5rem) 3rem;
   box-shadow: var(--rv-page-shadow);
-  border-radius: 1px;
+  border-radius: var(--rv-radius-page);
   /* Fine double rule just inside the edge, like a bound diary. */
   outline: 1px solid var(--rv-line);
   outline-offset: -12px;
@@ -335,8 +349,9 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   border: 0;
   outline: none;
   color: var(--rv-ink);
-  font: italic 500 clamp(2rem, 4.2vw, 2.9rem) / 1.12 var(--font-display);
-  letter-spacing: 0.005em;
+  font: var(--rv-title-style) var(--rv-title-weight) clamp(2rem, 4.2vw, 2.9rem) / 1.12 var(--font-display);
+  letter-spacing: var(--rv-title-tracking);
+  text-transform: var(--rv-title-transform);
 }
 .page-title::placeholder { color: var(--rv-ink-muted); opacity: 0.5; }
 
@@ -372,7 +387,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   line-height: 1.2;
   margin-top: 1.5em;
 }
-.reverie-prose h1 { font-size: 1.6em; font-style: italic; }
+.reverie-prose h1 { font-size: 1.6em; font-style: var(--rv-title-style); }
 .reverie-prose h2 { font-size: 1.32em; }
 .reverie-prose h3 { font-size: 1.12em; letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-sans); font-size: 0.72em; font-weight: 600; color: var(--rv-ink-muted); }
 .reverie-prose blockquote {
@@ -383,7 +398,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
 }
 .reverie-prose ul { list-style: none; padding-left: 1.3em; }
 .reverie-prose ul > li { position: relative; }
-.reverie-prose ul > li::before { content: '✦'; position: absolute; left: -1.25em; top: 0.1em; font-size: 0.6em; color: var(--rv-gold); line-height: inherit; }
+.reverie-prose ul > li::before { content: var(--rv-bullet); position: absolute; left: -1.25em; top: 0.1em; font-size: 0.6em; color: var(--rv-gold); line-height: inherit; }
 .reverie-prose ol { list-style: decimal; padding-left: 1.4em; }
 .reverie-prose ol ::marker { color: var(--rv-ink-muted); font-family: var(--font-display); }
 .reverie-prose li > p + p { margin-top: 0.4em; }
@@ -393,7 +408,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   margin: 1.6em 0;
   text-align: center;
 }
-.reverie-prose hr::after { content: '☾  ✦  ☽'; color: var(--rv-gold); letter-spacing: 0.5em; font-size: 0.8em; }
+.reverie-prose hr::after { content: var(--rv-rule); color: var(--rv-gold); letter-spacing: 0.5em; font-size: 0.8em; }
 .reverie-prose a { color: inherit; text-decoration: underline; text-decoration-color: var(--rv-gold); text-underline-offset: 3px; }
 .reverie-prose code { font-size: 0.85em; background: var(--rv-note); padding: 0.1em 0.3em; border-radius: 2px; }
 .reverie-prose pre { background: var(--rv-note); padding: 0.9em 1.1em; font-size: 0.8em; overflow-x: auto; }
@@ -459,7 +474,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   border: 0;
   padding: 0;
   color: var(--rv-ink);
-  font: italic 500 1.35rem var(--font-display);
+  font: var(--rv-title-style) 500 1.35rem var(--font-display);
   cursor: pointer;
 }
 .meta-date::-webkit-calendar-picker-indicator { opacity: 0.35; cursor: pointer; }
@@ -509,7 +524,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   padding: 0.55rem 0.75rem 0.65rem;
   background: var(--rv-note);
   border-left: 1px solid var(--rv-mauve);
-  border-radius: 1px;
+  border-radius: var(--rv-radius-note);
   animation: rise 220ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   transition: background-color 200ms, box-shadow 200ms, top 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
@@ -584,7 +599,7 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
   padding: 0.6rem 0.75rem;
   margin: 0 -0.75rem;
   width: calc(100% + 1.5rem);
-  border-radius: 2px;
+  border-radius: var(--rv-radius-note);
   transition: background-color 160ms;
 }
 .entry-row:hover { background: var(--rv-line); }
@@ -616,3 +631,70 @@ body[data-typing='true'] .chrome:focus-within { opacity: 1; }
 .calendar-day.is-today { box-shadow: inset 0 0 0 1px var(--rv-mauve); }
 .calendar-day.is-selected { background: var(--rv-accent); color: var(--rv-accent-ink); }
 .calendar-day.is-selected::after { background: var(--rv-accent-ink); }
+
+/* ---------- style picker ---------- */
+
+.style-card {
+  display: block;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: border-color 160ms, background-color 160ms;
+}
+.style-card:hover { background: var(--rv-line); }
+.style-card.is-selected { border-color: var(--rv-gold); }
+.style-card:has(input:focus-visible) { outline: 1.5px solid var(--rv-gold); outline-offset: 2px; }
+
+/* Inside a preview, the --rv-* variables are that style's own (set inline). */
+.style-preview {
+  display: block;
+  padding: 0.7rem 0.8rem 0;
+  height: 7.5rem;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--rv-desk-pattern), var(--rv-desk);
+  box-shadow: inset 0 0 0 1px var(--rv-line);
+}
+.style-preview-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  height: 100%;
+  padding: 0.55rem 0.7rem;
+  background: var(--rv-page);
+  color: var(--rv-ink);
+  border-radius: var(--rv-radius-page) var(--rv-radius-page) 0 0;
+  box-shadow: 0 6px 18px -10px rgb(0 0 0 / 0.35);
+}
+.style-preview-title {
+  font: var(--rv-title-style) var(--rv-title-weight) 1.15rem / 1.15 var(--rv-font-display);
+  text-transform: var(--rv-title-transform);
+  letter-spacing: var(--rv-title-tracking);
+  white-space: nowrap;
+}
+.style-preview-body {
+  font: 0.72rem / 1.35 var(--rv-font-body);
+  color: var(--rv-ink);
+  opacity: 0.85;
+}
+.style-preview-note {
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  padding: 0.05rem 0.4rem;
+  font: 0.62rem var(--rv-font-ui);
+  color: var(--rv-ink-muted);
+  background: var(--rv-note);
+  border-left: 2px solid var(--rv-mauve);
+  border-radius: var(--rv-radius-note);
+}
+.style-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  background: var(--rv-accent);
+  color: var(--rv-accent-ink);
+}
